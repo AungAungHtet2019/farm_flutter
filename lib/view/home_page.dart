@@ -1,3 +1,4 @@
+import 'package:farm_flutter/Screens/Signup/signup_screen.dart';
 import 'package:farm_flutter/Screens/Welcome/welcome_screen.dart';
 import 'package:farm_flutter/feedui/first.dart';
 import 'package:farm_flutter/feedui/fivth.dart';
@@ -5,7 +6,9 @@ import 'package:farm_flutter/feedui/fourth.dart';
 import 'package:farm_flutter/feedui/second.dart';
 import 'package:farm_flutter/feedui/sixth.dart';
 import 'package:farm_flutter/feedui/third.dart';
-import 'package:farm_flutter/view/profile/pages/profile_page.dart';
+import 'package:farm_flutter/view/news_page.dart';
+import 'package:farm_flutter/view/profile_page.dart';
+// import 'package:farm_flutter/view/profile/pages/profile_page.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:salomon_bottom_bar/salomon_bottom_bar.dart';
@@ -45,7 +48,9 @@ class _HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
         backgroundColor: Colors.white,
-        body: _currentIndex == 4 ? WelcomeScreen():_currentIndex != 3 ? SingleChildScrollView(
+        body:
+        // _currentIndex == 4 ? WelcomeScreen():
+        _currentIndex == 1 ? NewsPage():_currentIndex == 3 ? ProfilePage():_currentIndex ==4 ? SignUpScreen(): SingleChildScrollView(
           child: Column(
             children: [
 
@@ -289,7 +294,9 @@ class _HomePageState extends State<HomePage> {
               // SixthFeedUI(),
             ],
           ),
-        ) : ProfilePage(),
+        ),
+        // ProfilePage(),
+
 
       bottomNavigationBar: SalomonBottomBar(
         currentIndex: _currentIndex,
@@ -301,13 +308,18 @@ class _HomePageState extends State<HomePage> {
             title: Text("Home"),
             selectedColor: Colors.purple,
           ),
-
-          /// Likes
+          /// News
           SalomonBottomBarItem(
-            icon: Icon(Icons.favorite_border),
-            title: Text("Likes"),
-            selectedColor: Colors.pink,
+            icon: Icon(Icons.assignment),
+            title: Text("News"),
+            selectedColor: Colors.purple,
           ),
+          // /// Likes
+          // SalomonBottomBarItem(
+          //   icon: Icon(Icons.favorite_border),
+          //   title: Text("Likes"),
+          //   selectedColor: Colors.pink,
+          // ),
 
           /// Search
           SalomonBottomBarItem(

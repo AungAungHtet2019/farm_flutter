@@ -13,7 +13,7 @@ class SignUpScreenTopImage extends StatelessWidget {
     return Column(
       children: [
         Text(
-          "Sign Up".toUpperCase(),
+          "Get OTP".toUpperCase(),
           style: TextStyle(fontWeight: FontWeight.bold),
         ),
         SizedBox(height: defaultPadding),

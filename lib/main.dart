@@ -1,6 +1,18 @@
+import 'dart:io';
+
 import 'package:farm_flutter/constants.dart';
+import 'package:farm_flutter/view/news_page.dart';
 import 'package:farm_flutter/view/splash_screen_page.dart';
 import 'package:flutter/material.dart';
+
+
+class MyHttpOverrides extends HttpOverrides{
+  @override
+  HttpClient createHttpClient(SecurityContext? context){
+    return super.createHttpClient(context)
+      ..badCertificateCallback = (X509Certificate cert, String host, int port)=> true;
+  }
+}
 
 void main(){
   runApp(
@@ -33,6 +45,7 @@ void main(){
           )),
 
       home: SplashScreen(),
+      // home: NewsPage(),
     )
   );
 }

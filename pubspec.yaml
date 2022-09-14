@@ -52,6 +52,11 @@ dependencies:
   path_provider: ^1.6.28
   shared_preferences: ^0.5.11
 
+  sms_autofill: ^2.2.0
+  flutter_html: ^0.8.2
+  rflutter_alert: ^2.0.2
+  pull_to_refresh: ^2.0.0
+
 dev_dependencies:
   flutter_test:
     sdk: flutter
