@@ -1,4 +1,8 @@
+
+import 'package:farm_flutter/provider/user_provider.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class ProfilePage extends StatefulWidget {
   const ProfilePage({Key? key}) : super(key: key);
@@ -10,6 +14,28 @@ class ProfilePage extends StatefulWidget {
 class _ProfilePageState extends State<ProfilePage> {
 
   int counter = 0;
+  bool register_status = false;
+  String regPhoneNo = "";
+
+  _saveRegisterUserStatus()async{
+
+    SharedPreferences sp = await SharedPreferences.getInstance();
+    // //Storing
+    // sp.setBool("is_register_avl", true);
+
+    register_status = sp.getBool("is_register_avl")?? false;
+    regPhoneNo = sp.getString("regPhoneNo")?? "";
+
+    print("is_register_avl is "+register_status.toString());
+  }
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    _saveRegisterUserStatus();
+    Provider.of<UserProvider>(context,listen: false).checkUser(regPhoneNo);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -37,12 +63,14 @@ class _ProfilePageState extends State<ProfilePage> {
                           backgroundColor: Colors.white,
                         ),
                         SizedBox(height: 10.0,),
-                        Text('ဦးမြင့်ကြိုင်',
+                        Text(
+                            // 'ဦးမြင့်ကြိုင်',
+                          Provider.of<UserProvider>(context,listen: true).userModel.UserName,
                             style: TextStyle(
                               color:Colors.white,
                               fontSize: 20.0,
                             )),
-                        SizedBox(height: 10.0,),
+                        SizedBox(height: 5.0,),
                         // Text('S Class Mage',
                         //   style: TextStyle(
                         //     color:Colors.white,
@@ -201,7 +229,7 @@ class _ProfilePageState extends State<ProfilePage> {
               right: 20.0,
               child: Card(
                   child: Padding(
-                    padding:EdgeInsets.all(16.0),
+                    padding:EdgeInsets.all(12.0),
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                       children: [
@@ -225,13 +253,17 @@ class _ProfilePageState extends State<ProfilePage> {
                         Container(
                           child: Column(
                               children: [
-                                Text('Birthday',
+                                Text(
+                                  'Birthday',
                                   style: TextStyle(
                                       color: Colors.grey[400],
                                       fontSize: 14.0
                                   ),),
                                 SizedBox(height: 5.0,),
-                                Text('April 7th',
+                                Text(
+                                  // 'April 7th',
+                                  Provider.of<UserProvider>(context,listen: true).userModel.DateOfBirth,
+
                                   style: TextStyle(
                                     fontSize: 15.0,
                                   ),)

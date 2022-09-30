@@ -16,7 +16,8 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:http/http.dart' as http;
 
 import 'package:flutter_html/flutter_html.dart';
-import 'package:html/dom.dart' as dom; //For Http Pages
+import 'package:html/dom.dart' as dom;
+import 'package:pull_to_refresh/pull_to_refresh.dart'; //For Http Pages
 
 
 
@@ -29,11 +30,14 @@ class NewsPage extends StatefulWidget {
 
 class _NewsPageState extends State<NewsPage> {
 
+  RefreshController _refreshController =
+  RefreshController(initialRefresh: false);
    List<WpContent> newsModelList = [];
+   int pageIndex = 1;
 
-  _getData() async {
+  _getData(int myPageIndex) async {
 
-    var response = await http.get(apiEndpointNews+"?_embed");
+    var response = await http.get(apiEndpointNews+"&page="+myPageIndex.toString());
 
     print('Response status: ${response.statusCode}');
     print('Response body: ${response.body}');
@@ -53,40 +57,103 @@ class _NewsPageState extends State<NewsPage> {
 
   }
 
+   void _onRefresh() async{
+
+     setState(() {
+       pageIndex =1;
+       newsModelList = [];
+     });
+     _getData(pageIndex);
+     // monitor network fetch
+     await Future.delayed(Duration(milliseconds: 1000));
+     // if failed,use refreshFailed()
+     _refreshController.refreshCompleted();
+   }
+
+   void _onLoading() async{
+
+    setState(() {
+      pageIndex +=1;
+    });
+    _getData(pageIndex);
+     // monitor network fetch
+     await Future.delayed(Duration(milliseconds: 1000));
+     // if failed,use loadFailed(),if no data return,use LoadNodata()
+     // items.add((items.length+1).toString());
+     if(mounted)
+       setState(() {
+
+       });
+     _refreshController.loadComplete();
+   }
+
+
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
-    _getData();
+    _getData(pageIndex);
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: newsModelList.length == 0 ? Center(child: CircularProgressIndicator())
-          : ListView(
+      body: newsModelList.length == 0 ? Center(child: CircularProgressIndicator()) :
+      SmartRefresher(
+        enablePullDown: true,
+        enablePullUp: true,
+        header: WaterDropHeader(),
+        // footer: CustomFooter(
+        //   builder: (BuildContext context,LoadStatus mode){
+        //     Widget body ;
+        //     if(mode==LoadStatus.idle){
+        //       body =  Text("pull up load");
+        //     }
+        //     else if(mode==LoadStatus.loading){
+        //       body =  CupertinoActivityIndicator();
+        //     }
+        //     else if(mode == LoadStatus.failed){
+        //       body = Text("Load Failed!Click retry!");
+        //     }
+        //     else if(mode == LoadStatus.canLoading){
+        //       body = Text("release to load more");
+        //     }
+        //     else{
+        //       body = Text("No more Data");
+        //     }
+        //     return Container(
+        //       height: 55.0,
+        //       child: Center(child:body),
+        //     );
+        //   },
+        // ),
+        controller: _refreshController,
+        onRefresh: _onRefresh,
+        onLoading: _onLoading,
+            child: ListView(
         children: newsModelList.map((e) {
-          return InkWell(
-            onTap: (){
-              Navigator.push(context, MaterialPageRoute(builder: (context)=>NewsDetailPage( title: e.title.rendered,contentText: e.content.rendered)));
-            },
-            child: Card(
-                child: Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: myWidget(
-                      'https://www.westernunion.com/content/dam/wu/jm/responsive/send-money-in-person-from-jamaica-resp.png',
-                      e.modified,
-                      e.title.rendered,
-                      //'Flutter is Google’s mobile UI framework for crafting high-quality native interfaces on iOS and Android in record time. Flutter works with existing code, is used by developers and organizations around the world, and is free and open source.',
-                      // 'https://cloudfront-us-east-2.images.arcpublishing.com/reuters/4YJSBO3FOBLWZOBLAIHII2SXSA.jpg',
-                    e.embedded.featuredmedia[0].sourceUrl,
-                    e.content.rendered,
+            return InkWell(
+              onTap: (){
+                Navigator.push(context, MaterialPageRoute(builder: (context)=>NewsDetailPage( title: e.title.rendered,contentText: e.content.rendered)));
+              },
+              child: Card(
+                  child: Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: myWidget(
+                        'https://www.westernunion.com/content/dam/wu/jm/responsive/send-money-in-person-from-jamaica-resp.png',
+                        e.modified,
+                        e.title.rendered,
+                        //'Flutter is Google’s mobile UI framework for crafting high-quality native interfaces on iOS and Android in record time. Flutter works with existing code, is used by developers and organizations around the world, and is free and open source.',
+                        // 'https://cloudfront-us-east-2.images.arcpublishing.com/reuters/4YJSBO3FOBLWZOBLAIHII2SXSA.jpg',
+                      e.embedded.featuredmedia[0].sourceUrl,
+                      e.content.rendered,
 
-                  ),
-                )),
-          );
+                    ),
+                  )),
+            );
         }).toList(),
       ),
+          ),
     );
   }
 

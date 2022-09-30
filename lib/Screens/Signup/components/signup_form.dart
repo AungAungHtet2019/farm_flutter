@@ -261,82 +261,84 @@ class _SignUpFormState extends State<SignUpForm> {
   }
   @override
   Widget build(BuildContext context) {
-    return Form(
-      child: Column(
-        children: [
-          Padding(
-            padding: const EdgeInsets.symmetric(vertical: defaultPadding),
-            child: TextFormField(
-              textInputAction: TextInputAction.done,
-              // obscureText: true,
-              keyboardType: TextInputType.phone,
-              cursorColor: kPrimaryColor,
-              controller: _phoneNumberController,
-              decoration: InputDecoration(
-                hintText: "Your Phone Number",
-                prefixIcon: Padding(
-                  padding: const EdgeInsets.all(defaultPadding),
-                  child: Icon(Icons.phone),
+    return Scaffold(
+      body: Form(
+        child: Column(
+          children: [
+            Padding(
+              padding: const EdgeInsets.symmetric(vertical: defaultPadding),
+              child: TextFormField(
+                textInputAction: TextInputAction.done,
+                // obscureText: true,
+                keyboardType: TextInputType.phone,
+                cursorColor: kPrimaryColor,
+                controller: _phoneNumberController,
+                decoration: InputDecoration(
+                  hintText: "Your Phone Number",
+                  prefixIcon: Padding(
+                    padding: const EdgeInsets.all(defaultPadding),
+                    child: Icon(Icons.phone),
+                  ),
                 ),
               ),
             ),
-          ),
-          // TextFormField(
-          //   keyboardType: TextInputType.emailAddress,
-          //   textInputAction: TextInputAction.next,
-          //   cursorColor: kPrimaryColor,
-          //   onSaved: (email) {},
-          //   decoration: InputDecoration(
-          //     hintText: "Your email",
-          //     prefixIcon: Padding(
-          //       padding: const EdgeInsets.all(defaultPadding),
-          //       child: Icon(Icons.person),
-          //     ),
-          //   ),
-          // ),
-          // Padding(
-          //   padding: const EdgeInsets.symmetric(vertical: defaultPadding),
-          //   child: TextFormField(
-          //     textInputAction: TextInputAction.done,
-          //     obscureText: true,
-          //     cursorColor: kPrimaryColor,
-          //     decoration: InputDecoration(
-          //       hintText: "Your password",
-          //       prefixIcon: Padding(
-          //         padding: const EdgeInsets.all(defaultPadding),
-          //         child: Icon(Icons.lock),
-          //       ),
-          //     ),
-          //   ),
-          // ),
-          const SizedBox(height: defaultPadding / 2),
-          ElevatedButton(
-            onPressed: () async {
+            // TextFormField(
+            //   keyboardType: TextInputType.emailAddress,
+            //   textInputAction: TextInputAction.next,
+            //   cursorColor: kPrimaryColor,
+            //   onSaved: (email) {},
+            //   decoration: InputDecoration(
+            //     hintText: "Your email",
+            //     prefixIcon: Padding(
+            //       padding: const EdgeInsets.all(defaultPadding),
+            //       child: Icon(Icons.person),
+            //     ),
+            //   ),
+            // ),
+            // Padding(
+            //   padding: const EdgeInsets.symmetric(vertical: defaultPadding),
+            //   child: TextFormField(
+            //     textInputAction: TextInputAction.done,
+            //     obscureText: true,
+            //     cursorColor: kPrimaryColor,
+            //     decoration: InputDecoration(
+            //       hintText: "Your password",
+            //       prefixIcon: Padding(
+            //         padding: const EdgeInsets.all(defaultPadding),
+            //         child: Icon(Icons.lock),
+            //       ),
+            //     ),
+            //   ),
+            // ),
+            const SizedBox(height: defaultPadding / 2),
+            ElevatedButton(
+              onPressed: () async {
 
-              final String signature = await SmsAutoFill().getAppSignature;
-              print("Signature: $signature");
-              sendOTPSMS(_phoneNumberController.text);
-              Navigator.push(context, MaterialPageRoute(builder: (context)=>SmsVerificationPage()));
-            },
-            child: Text("Get OTP".toUpperCase()),
-          ),
-          const SizedBox(height: defaultPadding),
-          // AlreadyHaveAnAccountCheck(
-          //   login: false,
-          //   press: () {
-          //     Navigator.push(
-          //       context,
-          //       MaterialPageRoute(
-          //         builder: (context) {
-          //           return LoginScreen();
-          //         },
-          //       ),
-          //     );
-          //
-          //
-          //   },
-          // ),
-        ],
+                // final String signature = await SmsAutoFill().getAppSignature;
+                // print("Signature: $signature");
+                // sendOTPSMS(_phoneNumberController.text);
+                // Navigator.push(context, MaterialPageRoute(builder: (context)=>SmsVerificationPage("09698012415")));
+              },
+              child: Text("Get OTP".toUpperCase()),
+            ),
+            const SizedBox(height: defaultPadding),
+            // AlreadyHaveAnAccountCheck(
+            //   login: false,
+            //   press: () {
+            //     Navigator.push(
+            //       context,
+            //       MaterialPageRoute(
+            //         builder: (context) {
+            //           return LoginScreen();
+            //         },
+            //       ),
+            //     );
+            //
+            //
+            //   },
+            // ),
+          ],
+        ),
       ),
     );
   }

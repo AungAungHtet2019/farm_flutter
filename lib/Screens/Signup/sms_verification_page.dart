@@ -1,10 +1,22 @@
+import 'dart:convert';
+import 'dart:io';
+import 'dart:math';
+
+import 'package:farm_flutter/utils/rest_api.dart';
 import 'package:farm_flutter/view/home_page.dart';
+import 'package:farm_flutter/view/registeration_page.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:rflutter_alert/rflutter_alert.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sms_autofill/sms_autofill.dart';
+import 'package:http/http.dart' as http;
 
 class SmsVerificationPage extends StatefulWidget {
-  const SmsVerificationPage({Key? key}) : super(key: key);
+  // const SmsVerificationPage({Key? key}) : super(key: key);
+
+  String phoneNumber,randomnum,signature;
+  SmsVerificationPage(this.phoneNumber,this.randomnum,this.signature);
 
   @override
   State<SmsVerificationPage> createState() => _SmsVerificationPageState();
@@ -13,8 +25,104 @@ class SmsVerificationPage extends StatefulWidget {
 class _SmsVerificationPageState extends State<SmsVerificationPage>
     with SingleTickerProviderStateMixin {
 
+  TextEditingController _pincodeController = TextEditingController();
   AnimationController? _animationController;
   int levelClock = 2 * 60;
+
+
+
+
+  sendOTPSMS(String phoneNumber)async{
+
+
+
+
+    HttpClient client = new HttpClient(); //SSL Certificate အတွက်သုံးထားတာဖြစ်တယ်
+    client.badCertificateCallback = ((X509Certificate cert, String host, int port) => true);
+
+    int min = 1000; //min and max values act as your 6 digit range
+    int max = 9999;
+    var randomizer = new Random();
+    var rNum = min + randomizer.nextInt(max - min);
+    setState(() {
+      widget.randomnum = rNum.toString();
+    });
+    print(widget.randomnum);
+
+    final body = {
+      "to":phoneNumber,
+      // "message":"1234 sfT1fyxlGmR",
+      "message":"Your OTP Code is "+widget.randomnum+" "+widget.signature,
+      "sender":"SMSPoh"
+    };
+
+    final response = await http.post(
+      Uri.parse(URLS.smsPoh),
+      headers: {
+        'Content-Type': 'application/json',
+        //'Accept': 'application/json',
+        'Authorization': 'Bearer $token',
+      },
+      encoding: Encoding.getByName('utf-8'),
+      body: jsonEncode(body),
+    );
+
+    print("Response body : ${response.body}");
+    if (response.statusCode == 200) {
+      // If the server did return a 200 OK response,
+      // then parse the JSON.
+
+      print("Response body : ${response.body}");
+
+
+
+    } else {
+      // If the server did not return a 200 OK response,
+      // then throw an exception.
+    }
+
+  }
+
+  _saveRegisterUserStatus()async{
+
+    SharedPreferences sp = await SharedPreferences.getInstance();
+    //Storing
+    sp.setBool("is_register_avl", true);
+
+    bool result = sp.getBool("is_register_avl");
+
+    print("is_register_avl is "+result.toString());
+  }
+
+  void _faildDialog(String title) {
+    // flutter defined function
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext context) {
+        return CupertinoAlertDialog(
+          title: new Text("The Native "),
+          content: Padding(
+            padding: const EdgeInsets.only(top:15.0),
+            child: new Text(title),
+          ),
+          actions: <Widget>[
+            // CupertinoDialogAction(
+            //   isDefaultAction: true,
+            //   child: Text("This phone number is already registered",style: TextStyle(color: Colors.red,fontSize: 12.0)),
+            // ),
+            new FlatButton(
+              child: new Text("OK"),
+              onPressed: () {
+                Navigator.pop(context);
+
+              },
+            )
+          ],
+        );
+      },
+    );
+  }
 
   @override
   void initState() {
@@ -78,6 +186,7 @@ class _SmsVerificationPageState extends State<SmsVerificationPage>
             ),
             Center(
               child: PinFieldAutoFill(
+                controller: _pincodeController,
                 codeLength: 4,
                 autoFocus: true,
                 decoration: UnderlineDecoration(
@@ -124,6 +233,8 @@ class _SmsVerificationPageState extends State<SmsVerificationPage>
 
                   _animationController!.reset();
                   _animationController!.forward();
+                  sendOTPSMS(widget.phoneNumber);
+                  _listenSmsCode();
                 },
                 child: const Text("Resend"),
               ),
@@ -135,25 +246,34 @@ class _SmsVerificationPageState extends State<SmsVerificationPage>
                 onPressed:  () {
                   //Confirm and Navigate to Home Page
 
-                  Alert(
-                    context: context,
-                    type: AlertType.success,
-                    title: "",
-                    desc: "Success",
-                    buttons: [
-                      DialogButton(
-                        child: Text(
-                          "ပိတ်ရန်",
-                          style: TextStyle(color: Colors.white, fontSize: 20),
-                        ),
-                        onPressed: () {
-                          Navigator.pop(context);
-                          Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (context)=>HomePage()), (route) => false);
-                        },
-                        width: 120,
-                      )
-                    ],
-                  ).show();
+                  if(widget.randomnum ==  _pincodeController.text){
+                    Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (context)=>RegistrationPage(widget.phoneNumber)), (route) => false);
+                  }
+                  else{
+                    _faildDialog("Wrong Pincode");
+                  }
+
+
+                  // Alert(
+                  //   context: context,
+                  //   type: AlertType.success,
+                  //   title: "",
+                  //   desc: "Success",
+                  //   buttons: [
+                  //     DialogButton(
+                  //       child: Text(
+                  //         "ပိတ်ရန်",
+                  //         style: TextStyle(color: Colors.white, fontSize: 20),
+                  //       ),
+                  //       onPressed: () {
+                  //         _saveRegisterUserStatus();
+                  //         Navigator.pop(context);
+                  //         Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (context)=>RegistrationPage("09698012415")), (route) => false);
+                  //       },
+                  //       width: 120,
+                  //     )
+                  //   ],
+                  // ).show();
                 } ,
                 child: const Text("Confirm"),
               ),

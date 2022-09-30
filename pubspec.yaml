@@ -57,6 +57,14 @@ dependencies:
   rflutter_alert: ^2.0.2
   pull_to_refresh: ^2.0.0
 
+  date_format: ^2.0.0
+  cipher2: ^0.3.5
+  flutter_spinkit: ^4.1.2
+
+  native_pdf_view: ^4.0.0
+  provider: ^6.0.3
+
+
 dev_dependencies:
   flutter_test:
     sdk: flutter
@@ -87,6 +95,7 @@ flutter:
     - assets/images/farm_logo.jpg
     - assets/images/
     - assets/icons/
+    - assets/pdf/
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware.
